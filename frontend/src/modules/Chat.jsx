@@ -83,7 +83,7 @@ export default function Chat({ session }) {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        const API_URL = import.meta.env.VITE_API_URL
+        const API_URL = import.meta.env.VITE_API_URL || '';
         
         const res = await fetch(`${API_URL}/modules/chat-with-data/analyze`, {
             method: 'POST',
