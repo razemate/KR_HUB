@@ -10,6 +10,7 @@ from rapidfuzz import process, fuzz
 import PyPDF2
 import openpyxl
 import docx
+import csv
 from PIL import Image
 
 router = APIRouter(prefix="/modules/chat-with-data", tags=["chat-with-data"])
@@ -40,16 +41,28 @@ async def analyze(
                 except UnicodeDecodeError:
                     file_context = f"Uploaded File ({file.filename}) is binary or not UTF-8 encoded.\n"
 
-            # --- CSV ---
+            # --- CSV (Lightweight, No Pandas) ---
             elif filename.endswith('.csv'):
-                df = pd.read_csv(io.BytesIO(content))
-                file_context = f"Uploaded CSV Data ({file.filename}):\n{df.head(20).to_json(orient='records')}\n"
+                try:
+                    text_data = content.decode('utf-8')
+                    reader = csv.DictReader(io.StringIO(text_data))
+                    rows = list(reader)[:20] # Limit to 20 rows
+                    file_context = f"Uploaded CSV Data ({file.filename}):\n{json.dumps(rows, indent=2)}\n"
+                except Exception as csv_err:
+                    file_context = f"Error reading CSV: {str(csv_err)}\n"
             
-            # --- Excel ---
+            # --- Excel (Lightweight, No Pandas) ---
             elif filename.endswith(('.xlsx', '.xls')):
                 try:
-                    df = pd.read_excel(io.BytesIO(content))
-                    file_context = f"Uploaded Excel Data ({file.filename}):\n{df.head(20).to_json(orient='records')}\n"
+                    wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)
+                    ws = wb.active
+                    rows = []
+                    headers = [cell.value for cell in next(ws.rows)]
+                    
+                    for row in ws.iter_rows(min_row=2, max_row=21, values_only=True):
+                        rows.append(dict(zip(headers, row)))
+                        
+                    file_context = f"Uploaded Excel Data ({file.filename}):\n{json.dumps(rows, default=str, indent=2)}\n"
                 except Exception as xl_err:
                     file_context = f"Error reading Excel: {str(xl_err)}\n"
 

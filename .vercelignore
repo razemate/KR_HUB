@@ -1,0 +1,9 @@
+.venv
+venv
+__pycache__
+*.pyc
+.git
+.ds_store
+backend.zip
+test_data.csv
+node_modules

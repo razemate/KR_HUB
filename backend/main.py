@@ -2,6 +2,11 @@ from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
+import sys
+import os
+
+# Ensure the root directory is in sys.path so modules like 'core' and 'backend' can be imported
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.ai_gateway import run_ai
 from backend.auth_manager import get_current_user
