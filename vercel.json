@@ -1,23 +1,17 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "backend/api/index.py",
-      "use": "@vercel/python",
-      "config": { "includeFiles": ["core/**", "backend/**"] }
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/index.py": {
+      "includeFiles": ["core/**", "backend/**"]
     }
-  ],
-  "routes": [
-    { "src": "^/docs$", "dest": "backend/api/index.py" },
-    { "src": "^/openapi\\.json$", "dest": "backend/api/index.py" },
-    { "src": "^/modules/.*$", "dest": "backend/api/index.py" },
-    { "src": "^/ai/.*$", "dest": "backend/api/index.py" },
-    { "handle": "filesystem" },
-    { "src": "^/.*$", "dest": "/index.html" }
+  },
+  "rewrites": [
+    { "source": "/docs", "destination": "/api/index.py" },
+    { "source": "/openapi.json", "destination": "/api/index.py" },
+    { "source": "/modules/(.*)", "destination": "/api/index.py" },
+    { "source": "/ai/(.*)", "destination": "/api/index.py" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

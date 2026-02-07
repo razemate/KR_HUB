@@ -1,0 +1,14 @@
+fastapi
+supabase
+python-dotenv
+openai
+google-genai
+pydantic
+requests
+rapidfuzz
+pypdf2
+openpyxl
+python-docx
+pillow
+pandas
+python-multipart
