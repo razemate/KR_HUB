@@ -83,9 +83,7 @@ export default function Chat({ session }) {
             headers['Authorization'] = `Bearer ${token}`;
         }
 
-        // Determine API URL: Prioritize Env Vars -> Dev Proxy -> Relative (Prod)
-        const isDev = import.meta.env.DEV;
-        const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || (isDev ? 'http://localhost:8000' : '');
+        const API_URL = import.meta.env.VITE_API_URL
         
         const res = await fetch(`${API_URL}/modules/chat-with-data/analyze`, {
             method: 'POST',

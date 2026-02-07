@@ -16,6 +16,7 @@ export default function Login() {
     setMessage(null);
 
     try {
+        if (!supabase) throw new Error('Missing Supabase configuration');
         const { error } = await supabase.auth.signInWithPassword({
             email,
             password,
@@ -34,6 +35,7 @@ export default function Login() {
       setError(null);
       
       try {
+          if (!supabase) throw new Error('Missing Supabase configuration');
           const { error } = await supabase.auth.signUp({
               email,
               password,

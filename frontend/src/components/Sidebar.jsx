@@ -8,6 +8,7 @@ export default function Sidebar({ activeModule, switchModule, role, isOpen, onCl
   const [showLogin, setShowLogin] = useState(false);
 
   useEffect(() => {
+    if (!supabase) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
     });
@@ -23,6 +24,7 @@ export default function Sidebar({ activeModule, switchModule, role, isOpen, onCl
   }, []);
 
   const handleLogout = async () => {
+      if (!supabase) return;
       await supabase.auth.signOut();
   };
 

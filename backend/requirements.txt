@@ -2,7 +2,7 @@ fastapi
 supabase
 python-dotenv
 openai
-google-generativeai
+google-genai
 pydantic
 requests
 rapidfuzz

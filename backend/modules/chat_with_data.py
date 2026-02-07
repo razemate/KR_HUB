@@ -27,6 +27,8 @@ async def get_current_user_optional(request: Request):
     token = authorization.replace("Bearer ", "")
     try:
         from core.supabase_client import supabase
+        if not supabase:
+            return None
         res = supabase.auth.get_user(token)
         if res and res.user:
             return res.user
@@ -168,6 +170,13 @@ async def analyze(
     # Defaults to whatever the frontend sent, but we try to find a better match in the question
     used_table = table_name 
     q_lower = question.lower()
+
+    if not supabase:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Database is not configured on the server."},
+        )
     
     # List of known tables - In a real app, you might fetch this dynamically from information_schema
     possible_tables = ["subscribers", "orders", "products", "woocommerce", "users", "profiles"]

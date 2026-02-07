@@ -16,6 +16,7 @@ function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchUserRole = async (userId) => {
+      if (!supabase) return;
       try {
           const { data, error } = await supabase
               .from('profiles')
@@ -35,6 +36,7 @@ function App() {
   };
 
   useEffect(() => {
+    if (!supabase) return;
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) fetchUserRole(session.user.id);

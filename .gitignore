@@ -1,9 +1,14 @@
 __pycache__/
 *.pyc
 .env
+.env.local
+.env.*.local
 venv/
+backend/.venv/
+backend/.venv/**
 node_modules/
 .DS_Store
 .vscode/
 
 .vercel
+.trae/
