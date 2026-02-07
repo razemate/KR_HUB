@@ -17,7 +17,8 @@ app = FastAPI(title="Central AI Hub Backend", root_path="/api")
 # CORS Setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://kr-hub.vercel.app"],  # Replace with your actual frontend domain
+    allow_origins=["https://kr-hub.vercel.app", "http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origin_regex="https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
