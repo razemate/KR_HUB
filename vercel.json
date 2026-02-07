@@ -1,13 +1,11 @@
 {
-  "buildCommand": "cd frontend && npm run build",
-  "outputDirectory": "frontend/dist",
   "rewrites": [
     { "source": "/docs", "destination": "/backend/api/index.py" },
     { "source": "/openapi.json", "destination": "/backend/api/index.py" },
     { "source": "/modules/(.*)", "destination": "/backend/api/index.py" },
     { "source": "/ai/(.*)", "destination": "/backend/api/index.py" },
-    { "source": "/assets/(.*)", "destination": "/frontend/dist/assets/$1" },
-    { "source": "/(.*)", "destination": "/frontend/dist/index.html" }
+    { "source": "/assets/(.*)", "destination": "/assets/$1" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "builds": [
     {
