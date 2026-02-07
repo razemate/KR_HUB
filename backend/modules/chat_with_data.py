@@ -13,7 +13,7 @@ import docx
 import csv
 from PIL import Image
 
-router = APIRouter(prefix="/modules/chat-with-data", tags=["chat-with-data"])
+router = APIRouter(prefix="/chat-with-data", tags=["chat-with-data"])
 
 from fastapi import Request
 from typing import Optional

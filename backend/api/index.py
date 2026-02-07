@@ -17,14 +17,14 @@ app = FastAPI(title="Central AI Hub Backend")
 # CORS Setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"], 
+    allow_origins=["https://kr-hub.vercel.app"],  # Replace with your actual frontend domain
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Register Modules
-app.include_router(chat_with_data.router)
+app.include_router(chat_with_data.router, prefix="/api")
 
 class AIRequest(BaseModel):
     messages: List[Dict[str, str]]

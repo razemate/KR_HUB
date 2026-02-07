@@ -85,7 +85,7 @@ export default function Chat({ session }) {
 
         const API_URL = import.meta.env.VITE_API_URL || '';
         
-        const res = await fetch(`${API_URL}/modules/chat-with-data/analyze`, {
+        const res = await fetch(`${API_URL}/api/chat-with-data/analyze`, {
             method: 'POST',
             headers: headers,
             body: formData
