@@ -77,7 +77,8 @@ export default function Chat({ session }) {
             return;
         }
         
-        const res = await fetch('http://127.0.0.1:8000/modules/chat-with-data/analyze', {
+        const apiUrl = import.meta.env.VITE_BACKEND_URL || '/';
+        const res = await fetch(`${apiUrl}modules/chat-with-data/analyze`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`

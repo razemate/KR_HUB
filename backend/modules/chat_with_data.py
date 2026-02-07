@@ -269,8 +269,8 @@ async def analyze(
         try:
             # Check if it's a string (error message)
             if isinstance(stream_generator, str):
-                yield json.dumps({"chunk": stream_generator}) + "\n"
-                yield "[DONE]"
+                yield f"data: {json.dumps({'chunk': stream_generator})}\n\n"
+                yield "data: [DONE]\n\n"
                 return
 
             # Gemini Stream

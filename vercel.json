@@ -1,21 +1,24 @@
 {
+  "buildCommand": "cd frontend && npm run build",
+  "outputDirectory": "frontend/dist",
+  "env": {
+    "SUPABASE_URL": "@supabase_url",
+    "SUPABASE_SERVICE_ROLE_KEY": "@supabase_service_role_key",
+    "GLOBAL_GEMINI_KEY": "@global_gemini_key",
+    "GLOBAL_OPENAI_KEY": "@global_openai_key"
+  },
   "rewrites": [
-    { "source": "/docs", "destination": "/backend/main.py" },
-    { "source": "/openapi.json", "destination": "/backend/main.py" },
-    { "source": "/modules/(.*)", "destination": "/backend/main.py" },
-    { "source": "/ai/(.*)", "destination": "/backend/main.py" },
-    { "source": "/assets/(.*)", "destination": "/frontend/assets/$1" },
-    { "source": "/(.*)", "destination": "/frontend/index.html" }
+    { "source": "/docs", "destination": "/backend/api/index.py" },
+    { "source": "/openapi.json", "destination": "/backend/api/index.py" },
+    { "source": "/modules/(.*)", "destination": "/backend/api/index.py" },
+    { "source": "/ai/(.*)", "destination": "/backend/api/index.py" },
+    { "source": "/assets/(.*)", "destination": "/frontend/dist/assets/$1" },
+    { "source": "/(.*)", "destination": "/frontend/dist/index.html" }
   ],
-  "builds": [
-    {
-      "src": "backend/main.py",
-      "use": "@vercel/python"
-    },
-    {
-      "src": "frontend/package.json",
-      "use": "@vercel/static-build",
-      "config": { "distDir": "dist" }
+  "functions": {
+    "backend/api/index.py": {
+      "runtime": "python3.11"
     }
-  ]
+  }
 }
+

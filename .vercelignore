@@ -6,4 +6,6 @@ __pycache__
 .ds_store
 backend.zip
 test_data.csv
-node_modules
+.env.local
+.env.development
+.trae
