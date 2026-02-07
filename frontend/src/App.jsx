@@ -13,25 +13,7 @@ function App() {
   const [role, setRole] = useState('user');
   const [activeModule, setActiveModule] = useState('home');
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      if (session) fetchUserRole(session.user.id);
-    });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      if (session) {
-          fetchUserRole(session.user.id);
-      } else {
-          setRole('user'); // Reset role on logout
-      }
-    });
-
-    return () => subscription.unsubscribe();
-  }, []);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const fetchUserRole = async (userId) => {
       try {
@@ -52,8 +34,29 @@ function App() {
       }
   };
 
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      if (session) fetchUserRole(session.user.id);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      if (session) {
+          fetchUserRole(session.user.id);
+      } else {
+          setRole('user'); // Reset role on logout
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   const switchModule = (moduleId) => {
     setActiveModule(moduleId);
+    setIsSidebarOpen(false); // Close sidebar on mobile when switching
   };
 
   const getModuleTitle = (id) => {
@@ -75,31 +78,40 @@ function App() {
       case 'reports':
         return <Reports />;
       case 'dev':
+        // Double check role here to prevent access
         return role === 'developer' ? <DevCenter /> : <Home switchModule={switchModule} />;
       default:
         return <Home switchModule={switchModule} />;
     }
   };
 
-  useEffect(() => {
-    if (role === 'user' && activeModule === 'dev') {
-      setActiveModule('home');
-    }
-  }, [role, activeModule]);
-
   return (
     <div className="h-screen flex overflow-hidden bg-surface font-sans text-slate-600">
+      {/* Mobile Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       <Sidebar 
         activeModule={activeModule} 
         switchModule={switchModule} 
         role={role} 
         setRole={setRole} 
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
       
       <main className="flex-1 flex flex-col min-w-0 bg-surface relative">
-        <Header title={getModuleTitle(activeModule)} role={role} />
+        <Header 
+          title={getModuleTitle(activeModule)} 
+          role={role} 
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        />
         
-        <div id="module-content" className="flex-1 overflow-y-auto custom-scrollbar p-8">
+        <div id="module-content" className="flex-1 overflow-y-auto custom-scrollbar p-4 md:p-8">
           {renderModule()}
         </div>
       </main>

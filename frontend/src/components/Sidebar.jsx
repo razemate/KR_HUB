@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Zap, LayoutDashboard, MessageSquare, BarChart3, Code2, LogIn, LogOut, User } from 'lucide-react';
+import { Zap, LayoutDashboard, MessageSquare, BarChart3, Code2, LogIn, LogOut, User, X } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import Login from '../modules/Login';
 
-export default function Sidebar({ activeModule, switchModule, role, setRole }) {
+export default function Sidebar({ activeModule, switchModule, role, isOpen, onClose }) {
   const [session, setSession] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
@@ -28,7 +28,7 @@ export default function Sidebar({ activeModule, switchModule, role, setRole }) {
 
   if (showLogin && !session) {
       return (
-          <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center">
+          <div className="fixed inset-0 z-100 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center">
               <div className="relative">
                   <button 
                     onClick={() => setShowLogin(false)}
@@ -43,14 +43,23 @@ export default function Sidebar({ activeModule, switchModule, role, setRole }) {
   }
 
   return (
-    <aside className="w-72 bg-sidebar text-slate-300 flex flex-col z-50 shrink-0 h-screen">
-      <div className="p-8">
+    <aside className={`
+      fixed inset-y-0 left-0 z-50 w-72 bg-sidebar text-slate-300 flex flex-col h-screen transition-transform duration-300 transform 
+      ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
+      md:translate-x-0 md:relative shrink-0
+    `}>
+      <div className="p-8 flex justify-between items-center">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
             <Zap className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-display font-bold text-white tracking-tight">AI Hub</h1>
         </div>
+        
+        {/* Mobile Close Button */}
+        <button onClick={onClose} className="md:hidden text-slate-400 hover:text-white p-1">
+          <X className="w-6 h-6" />
+        </button>
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mt-4">

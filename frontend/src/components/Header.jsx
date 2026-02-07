@@ -1,12 +1,18 @@
 import React from 'react';
-import { Bell } from 'lucide-react';
+import { Bell, Menu } from 'lucide-react';
 
-export default function Header({ title, role }) {
+export default function Header({ title, role, toggleSidebar }) {
   return (
-    <header className="h-16 border-b border-slate-200 flex items-center justify-between px-8 bg-white/80 backdrop-blur-md sticky top-0 z-40">
-      <div className="flex items-center gap-4">
-        <h2 className="text-lg font-semibold text-slate-800">{title}</h2>
-        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
+    <header className="h-16 border-b border-slate-200 flex items-center justify-between px-4 md:px-8 bg-white/80 backdrop-blur-md sticky top-0 z-40">
+      <div className="flex items-center gap-3 md:gap-4">
+        <button 
+          onClick={toggleSidebar}
+          className="md:hidden p-1 -ml-2 text-slate-500 hover:text-slate-700"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+        <h2 className="text-lg font-semibold text-slate-800 truncate">{title}</h2>
+        <span className={`hidden md:inline-block px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider border ${
             role === 'developer' 
             ? 'bg-amber-50 text-amber-600 border-amber-200' 
             : 'bg-slate-100 text-slate-500 border-slate-200'

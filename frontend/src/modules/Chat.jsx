@@ -99,7 +99,7 @@ export default function Chat({ session }) {
             try {
                 const errorData = await res.json();
                 errorMessage += errorData.detail || "Server error occurred";
-            } catch (e) {
+            } catch {
                 // If we can't parse the error response, use a generic message
                 errorMessage += "Unable to parse server error response";
             }
@@ -193,9 +193,9 @@ export default function Chat({ session }) {
                         remarkPlugins={[remarkGfm]} 
                         rehypePlugins={[rehypeRaw]}
                         components={{
-                            table: ({node, ...props}) => <div className="overflow-x-auto my-4 border rounded-lg"><table className="w-full text-sm text-left" {...props} /></div>,
-                            th: ({node, ...props}) => <th className="bg-slate-100 px-4 py-2 font-semibold border-b" {...props} />,
-                            td: ({node, ...props}) => <td className="px-4 py-2 border-b last:border-0" {...props} />
+                            table: ({...props}) => <div className="overflow-x-auto my-4 border rounded-lg"><table className="w-full text-sm text-left" {...props} /></div>,
+                            th: ({...props}) => <th className="bg-slate-100 px-4 py-2 font-semibold border-b" {...props} />,
+                            td: ({...props}) => <td className="px-4 py-2 border-b last:border-0" {...props} />
                         }}
                     >
                         {msg.text}
