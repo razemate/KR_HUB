@@ -12,7 +12,7 @@ from core.ai_gateway import run_ai
 from backend.auth_manager import get_current_user
 from backend.modules import chat_with_data # Explicit Import
 
-app = FastAPI(title="Central AI Hub Backend")
+app = FastAPI(title="Central AI Hub Backend", root_path="/api")
 
 # CORS Setup
 app.add_middleware(
@@ -23,8 +23,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Register Modules
-app.include_router(chat_with_data.router, prefix="/api")
+# Register Modules - Use /modules prefix to match vercel rewrites
+app.include_router(chat_with_data.router)
 
 class AIRequest(BaseModel):
     messages: List[Dict[str, str]]
