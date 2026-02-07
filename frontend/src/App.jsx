@@ -12,6 +12,7 @@ function App() {
   const [session, setSession] = useState(null);
   const [role, setRole] = useState('user');
   const [activeModule, setActiveModule] = useState('home');
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -89,16 +90,18 @@ function App() {
 
   return (
     <div className="h-screen flex overflow-hidden bg-surface font-sans text-slate-600">
-      <Sidebar 
-        activeModule={activeModule} 
-        switchModule={switchModule} 
-        role={role} 
-        setRole={setRole} 
+      <Sidebar
+        activeModule={activeModule}
+        switchModule={switchModule}
+        role={role}
+        setRole={setRole}
+        mobileOpen={mobileOpen}
+        setMobileOpen={setMobileOpen}
       />
-      
+
       <main className="flex-1 flex flex-col min-w-0 bg-surface relative">
-        <Header title={getModuleTitle(activeModule)} role={role} />
-        
+        <Header title={getModuleTitle(activeModule)} role={role} toggleSidebar={() => setMobileOpen(v => !v)} />
+
         <div id="module-content" className="flex-1 overflow-y-auto custom-scrollbar p-8">
           {renderModule()}
         </div>

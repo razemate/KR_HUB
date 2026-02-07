@@ -3,7 +3,7 @@ import { Zap, LayoutDashboard, MessageSquare, BarChart3, Code2, LogIn, LogOut, U
 import { supabase } from '../supabaseClient';
 import Login from '../modules/Login';
 
-export default function Sidebar({ activeModule, switchModule, role, setRole }) {
+export default function Sidebar({ activeModule, switchModule, role, setRole, mobileOpen = false, setMobileOpen = () => {} }) {
   const [session, setSession] = useState(null);
   const [showLogin, setShowLogin] = useState(false);
 
@@ -43,7 +43,20 @@ export default function Sidebar({ activeModule, switchModule, role, setRole }) {
   }
 
   return (
-    <aside className="w-72 bg-sidebar text-slate-300 flex flex-col z-50 shrink-0 h-screen">
+    <>
+      {/* mobile overlay */}
+      <div onClick={() => setMobileOpen(false)} className={`${mobileOpen ? 'fixed' : 'hidden'} inset-0 bg-black/40 z-40 md:hidden`} />
+
+      <aside className={`fixed md:relative z-50 md:z-auto w-72 bg-sidebar text-slate-300 flex flex-col shrink-0 h-screen transform transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className="md:hidden p-4 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
+              <Zap className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-lg font-display font-bold text-white tracking-tight">AI Hub</h1>
+          </div>
+          <button onClick={() => setMobileOpen(false)} className="text-slate-300">Close</button>
+        </div>
       <div className="p-8">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-brand-500 rounded-xl flex items-center justify-center shadow-lg shadow-brand-500/20">
@@ -146,5 +159,6 @@ export default function Sidebar({ activeModule, switchModule, role, setRole }) {
         )}
       </div>
     </aside>
+    </>
   );
 }
