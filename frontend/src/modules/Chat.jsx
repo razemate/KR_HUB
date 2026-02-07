@@ -84,8 +84,11 @@ export default function Chat({ session }) {
         }
 
         const API_URL = import.meta.env.VITE_API_URL || '';
+
+        // Use the modules prefix as defined in vercel.json rewrites
+        const apiUrl = API_URL ? `${API_URL}/api/chat-with-data/analyze` : '/api/chat-with-data/analyze';
         
-        const res = await fetch(`${API_URL}/api/chat-with-data/analyze`, {
+        const res = await fetch(apiUrl, {
             method: 'POST',
             headers: headers,
             body: formData
