@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+supabase
+python-dotenv
+openai
+google-generativeai
+pydantic
+requests
+rapidfuzz
+pypdf2
+openpyxl
+python-docx
+pillow
