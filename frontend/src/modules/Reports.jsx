@@ -2,11 +2,7 @@ import React from 'react';
 import { Plus, BarChart2 } from 'lucide-react';
 
 export default function Reports() {
-  const reports = [
-    { id: 1, title: 'Q3 Market Sentiment', date: 'Oct 12, 2023', status: 'Complete', score: 94 },
-    { id: 2, title: 'Competitor Feature Matrix', date: 'Oct 14, 2023', status: 'Processing', score: 0 },
-    { id: 3, title: 'User Retention Analysis', date: 'Oct 15, 2023', status: 'Complete', score: 88 }
-  ];
+  const reports = []; // Mocks removed per user request
 
   return (
     <div className="animate-fade-in max-w-6xl mx-auto">

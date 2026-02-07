@@ -15,16 +15,42 @@ from PIL import Image
 
 router = APIRouter(prefix="/modules/chat-with-data", tags=["chat-with-data"])
 
+from fastapi import Request
+from typing import Optional
+
+async def get_current_user_optional(request: Request):
+    """Get current user if authenticated, otherwise return None"""
+    authorization = request.headers.get("authorization")
+    if not authorization:
+        return None
+
+    token = authorization.replace("Bearer ", "")
+    try:
+        from core.supabase_client import supabase
+        res = supabase.auth.get_user(token)
+        if res and res.user:
+            return res.user
+        return None
+    except Exception:
+        return None
+
 @router.post("/analyze")
 async def analyze(
+    request: Request,
     question: str = Form(...),
     table_name: str = Form("profiles"),
     mode: str = Form("database"), # 'general' or 'database'
     file: UploadFile = File(None),
-    user=Depends(get_current_user)
+    user: Optional[object] = Depends(get_current_user_optional)
 ):
-    user_id = user.id if not isinstance(user, dict) else user.get("id")
-    
+    # Handle both authenticated and unauthenticated users
+    if user:
+        user_id = user.id if not isinstance(user, dict) else user.get("id")
+    else:
+        # Use a default/fallback user ID for unauthenticated requests
+        # For general mode, this is acceptable
+        user_id = "anonymous"
+
     file_context = ""
     image_data = None
 

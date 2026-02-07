@@ -2,11 +2,7 @@ import React from 'react';
 import { MessageSquare, BarChart3, Plus } from 'lucide-react';
 
 export default function Home({ switchModule }) {
-  const reports = [
-    { id: 1, title: 'Q3 Market Sentiment', date: 'Oct 12, 2023', status: 'Complete', score: 94 },
-    { id: 2, title: 'Competitor Feature Matrix', date: 'Oct 14, 2023', status: 'Processing', score: 0 },
-    { id: 3, title: 'User Retention Analysis', date: 'Oct 15, 2023', status: 'Complete', score: 88 }
-  ];
+  const reports = []; // Mocks removed
 
   return (
     <div className="max-w-6xl mx-auto animate-fade-in">

@@ -10,3 +10,5 @@ pypdf2
 openpyxl
 python-docx
 pillow
+pandas
+python-multipart

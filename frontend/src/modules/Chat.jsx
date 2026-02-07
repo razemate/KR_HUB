@@ -68,27 +68,43 @@ export default function Chat({ session }) {
         }
         
         const token = session?.access_token;
-        if (!token) {
+        // Allow general mode to work without authentication, but require auth for database mode
+        if (!token && mode === 'database') {
             // Fallback for demo/dev mode: Tell the user to connect instead of crashing
-             setMessages(prev => [...prev, { 
-                role: 'ai', 
-                text: "⚠️ **Authentication Required**\n\nTo access real data, I need a secure connection to the database. Please sign in using the button in the sidebar (if available) or check your configuration." 
+             setMessages(prev => [...prev, {
+                role: 'ai',
+                text: "⚠️ **Authentication Required**\n\nTo access real data, I need a secure connection to the database. Please sign in using the button in the sidebar (if available) or check your configuration."
             }]);
             return;
         }
+        const headers = {};
+        // Only include authorization header if we have a token
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        // Determine API URL: Prioritize Env Vars -> Dev Proxy -> Relative (Prod)
+        const isDev = import.meta.env.DEV;
+        const API_URL = import.meta.env.VITE_API_URL || import.meta.env.VITE_BACKEND_URL || (isDev ? 'http://localhost:8000' : '');
         
-        const apiUrl = import.meta.env.VITE_BACKEND_URL || '/';
-        const res = await fetch(`${apiUrl}modules/chat-with-data/analyze`, {
+        const res = await fetch(`${API_URL}/modules/chat-with-data/analyze`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
+            headers: headers,
             body: formData
         });
 
         if (!res.ok) {
-            const errorData = await res.json();
-            throw new Error(errorData.detail || "Server error occurred");
+            let errorMessage = `Server responded with status ${res.status}. `;
+
+            try {
+                const errorData = await res.json();
+                errorMessage += errorData.detail || "Server error occurred";
+            } catch (e) {
+                // If we can't parse the error response, use a generic message
+                errorMessage += "Unable to parse server error response";
+            }
+
+            throw new Error(errorMessage);
         }
 
         // --- STREAMING RESPONSE HANDLING ---
@@ -130,7 +146,18 @@ export default function Chat({ session }) {
         }
 
     } catch (error) {
-        setMessages(prev => [...prev, { role: 'ai', text: `Error: ${error.message}` }]);
+        console.error("Chat error:", error);
+        let errorMessage = "Network error: Unable to connect to the server. ";
+
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+            // Network error (server unreachable, DNS failure, etc.)
+            errorMessage += "Please check your connection and try again.";
+        } else {
+            // Other types of errors
+            errorMessage += error.message || "An unexpected error occurred.";
+        }
+
+        setMessages(prev => [...prev, { role: 'ai', text: `Error: ${errorMessage}` }]);
     } finally {
         setIsLoading(false);
         setSelectedFile(null);
