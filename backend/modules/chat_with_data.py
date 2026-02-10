@@ -33,6 +33,7 @@ async def get_current_user_optional(request: Request):
 async def analyze(
     request: Request,
     question: str = Form(...),
+    history: str = Form("[]"), # New field for chat history
     table_name: str = Form("profiles"),
     mode: str = Form("database"), # 'general' or 'database'
     file: UploadFile = File(None),
@@ -47,9 +48,16 @@ async def analyze(
     # 1. Process File
     file_context, image_data = await ChatService.process_file(file)
 
+    # Parse History
+    try:
+        chat_history = json.loads(history)
+    except:
+        chat_history = []
+
     # --- GENERAL MODE ---
     if mode == "general":
-        final_messages = [
+        # Construct messages with history
+        final_messages = chat_history + [
             {"role": "user", "content": f"{file_context}\n\nQuestion: {question}"}
         ]
         
@@ -73,14 +81,21 @@ async def analyze(
     # 3. Query Database
     db_context, columns = ChatService.query_database(used_table, question)
     
-    # Construct Prompt
-    final_messages = [
+    # Construct Prompt with History
+    # We put the Context in the *System* or *Last User Message*.
+    # Ideally, history comes first, then the new question with attached context.
+    
+    context_block = f"""
+    CONTEXT:
+    - Table: {used_table}
+    - Schema Columns: {columns}
+    - Database Data Sample: {db_context}
+    - File Content: {file_context}
+    """
+    
+    final_messages = chat_history + [
         {"role": "user", "content": f"""
-        CONTEXT:
-        - Table: {used_table}
-        - Schema Columns: {columns}
-        - Database Data Sample: {db_context}
-        - File Content: {file_context}
+        {context_block}
         
         USER QUESTION: "{question}"
         

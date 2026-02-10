@@ -100,8 +100,25 @@ def run_ai(user_id: str, messages: list, provider: str = "gemini", model: str = 
                             ),
                         ):
                             yield chunk
-                    except Exception:
-                        yield _TextChunk("AI is temporarily unavailable. Please verify server configuration and try again.")
+                    except Exception as e:
+                        # Catch Resource Exhausted (429) inside stream and trigger Fallback manually
+                        if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                            print(f"Gemini 429 Hit. Falling back to OpenRouter...")
+                            try:
+                                fallback_key = OPENROUTER_API_KEY
+                                if fallback_key:
+                                    # We need to manually invoke the OpenRouter stream here
+                                    or_response = _run_openrouter(fallback_key, messages, "openrouter/free", temperature, True)
+                                    for chunk in or_response:
+                                        if hasattr(chunk, 'choices') and chunk.choices[0].delta.content:
+                                            yield _TextChunk(chunk.choices[0].delta.content)
+                                    return # End successfully
+                            except Exception as fb_e:
+                                yield _TextChunk(f"Fallback Failed: {str(fb_e)}")
+                                return
+
+                        print(f"STREAM ERROR: {e}")
+                        yield _TextChunk(f"AI Error: {str(e)}")
 
                 return stream_generator()
             

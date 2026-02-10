@@ -65,6 +65,16 @@ export default function Chat({ session }) {
         const formData = new FormData();
         formData.append('question', input || "Analyze this file");
         formData.append('mode', mode); // Send selected mode
+        
+        // Send History (exclude the very first 'ai' welcome message if it's static, 
+        // but keeping it is fine too. We filter out the *current* message we just added locally)
+        // We only want previous turns.
+        const historyToSend = messages.map(m => ({
+            role: m.role === 'ai' ? 'model' : 'user', // Map 'ai' -> 'model' for Gemini/consistency
+            content: m.text
+        }));
+        formData.append('history', JSON.stringify(historyToSend));
+
         if (selectedFile) {
             formData.append('file', selectedFile);
         }
