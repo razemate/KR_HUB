@@ -1,7 +1,7 @@
 from google import genai
 from google.genai import types
 from openai import OpenAI
-from core.config_manager import config
+from backend.config import GEMINI_API_KEY, OPENROUTER_API_KEY
 from core.supabase_client import supabase
 from datetime import datetime
 import io
@@ -58,8 +58,17 @@ def run_ai(user_id: str, messages: list, provider: str = "gemini", model: str = 
     try:
         if provider == "gemini":
             # BYOK Check for Gemini
-            api_key = get_user_key(user_id, "gemini") or config.get("GLOBAL_GEMINI_KEY")
-            if not api_key: raise Exception("Missing Gemini Key")
+            api_key = get_user_key(user_id, "gemini") or GEMINI_API_KEY
+            if not api_key:
+                # Check for OpenRouter fallback explicitly before failing
+                if OPENROUTER_API_KEY:
+                     # Switch provider if Gemini missing but OpenRouter present (implicit fallback)
+                     # But logic below handles explicit provider switch.
+                     # Here we just raise to trigger the except block which does fallback.
+                     raise Exception("Missing Gemini Key")
+                else:
+                     raise RuntimeError("No AI API key configured. Check config.py or Vercel env variables.")
+
             api_key = api_key.strip().split()[0]
 
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -109,7 +118,7 @@ def run_ai(user_id: str, messages: list, provider: str = "gemini", model: str = 
 
         elif provider == "openai" or provider == "openrouter":
              # BYOK Check for OpenRouter/OpenAI
-            api_key = get_user_key(user_id, "openrouter") or config.get("GLOBAL_OPENAI_KEY")
+            api_key = get_user_key(user_id, "openrouter") or OPENROUTER_API_KEY
             if not api_key: raise Exception("Missing OpenRouter Key")
             api_key = api_key.strip().split()[0]
             
@@ -139,7 +148,7 @@ def run_ai(user_id: str, messages: list, provider: str = "gemini", model: str = 
         
         # 2. Fallback to OpenRouter Free
         try:
-            fallback_key = config.get("GLOBAL_OPENAI_KEY")
+            fallback_key = OPENROUTER_API_KEY
             if fallback_key:
                 fallback_key = fallback_key.strip().split()[0]
             if fallback_key and fallback_key.startswith("sk-or"):

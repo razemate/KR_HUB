@@ -1,11 +1,9 @@
 import os
 from supabase import create_client, Client
-from dotenv import load_dotenv
+from backend.config import SUPABASE_URL, SUPABASE_SERVICE_ROLE
 
-load_dotenv(".env")
-
-url = os.getenv("SUPABASE_URL")
-key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+url = SUPABASE_URL
+key = SUPABASE_SERVICE_ROLE
 
 supabase: Client = create_client(url, key)
 

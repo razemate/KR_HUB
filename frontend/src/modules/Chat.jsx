@@ -4,6 +4,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 
+import { analyzeData } from '../services/api';
+
 export default function Chat({ session }) {
   const [messages, setMessages] = useState([
     { role: 'ai', text: 'Hello! I am your central AI assistant. You can upload CSV/PDF files or ask me about your database.' }
@@ -77,36 +79,8 @@ export default function Chat({ session }) {
             }]);
             return;
         }
-        const headers = {};
-        // Only include authorization header if we have a token
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
 
-        const API_URL = import.meta.env.VITE_API_URL || '';
-
-        // Use the modules prefix as defined in vercel.json rewrites
-        const apiUrl = API_URL ? `${API_URL}/api/chat-with-data/analyze` : '/api/chat-with-data/analyze';
-        
-        const res = await fetch(apiUrl, {
-            method: 'POST',
-            headers: headers,
-            body: formData
-        });
-
-        if (!res.ok) {
-            let errorMessage = `Server responded with status ${res.status}. `;
-
-            try {
-                const errorData = await res.json();
-                errorMessage += errorData.detail || "Server error occurred";
-            } catch {
-                // If we can't parse the error response, use a generic message
-                errorMessage += "Unable to parse server error response";
-            }
-
-            throw new Error(errorMessage);
-        }
+        const res = await analyzeData(formData, token);
 
         // --- STREAMING RESPONSE HANDLING ---
         const reader = res.body.getReader();
