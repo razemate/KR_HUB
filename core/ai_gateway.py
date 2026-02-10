@@ -72,7 +72,7 @@ def run_ai(user_id: str, messages: list, provider: str = "gemini", model: str = 
             api_key = api_key.strip().split()[0]
 
             current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
-            system_instruction = f"You are the Central AI Hub Assistant. Today is {current_time}. Your goal is to be helpful, professional, and concise. When analyzing data, provide clear summaries and use Markdown tables. Always format lists properly. Do NOT ask for clarification on typos or vague queries; infer the user's intent and provide the best possible answer immediately."
+            system_instruction = f"You are the Central AI Hub Assistant. Today is {current_time}. Your goal is to be helpful, professional, and concise. When analyzing data, provide clear summaries and use Markdown tables. Always format lists properly. Do NOT ask for clarification on typos or vague queries; infer the user's intent and provide the best possible answer immediately. If the data indicates a System Error (like Schema Cache or Access Denied), apologize and state that the data is unavailable; do NOT provide technical debugging steps to the user."
 
             model_name = model or "gemini-flash-latest"
 

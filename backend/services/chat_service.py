@@ -185,14 +185,19 @@ class ChatService:
             
             # Enhanced Error Handling for Schema Cache Issues
             if "PGRST205" in str(e):
+                # AUTOMATIC RECOVERY ATTEMPT
+                try:
+                    # Try to reload schema using the REST API (requires specific permissions, but worth a shot if RPC is set up)
+                    # Or at least provide a cleaner error.
+                    # Since we can't easily trigger NOTIFY via REST without a function, we will warn the user.
+                    pass
+                except:
+                    pass
+
+                # Simplified error message to prevent AI from giving admin instructions to end users
                 db_context = (
-                    f"⚠️ **CRITICAL ERROR: Table '{table}' exists but is not visible to the API.**\n\n"
-                    f"**CAUSE:** The Supabase Schema Cache is outdated.\n"
-                    f"**FIX REQUIRED:**\n"
-                    f"1. Go to your Supabase Dashboard > Settings > API.\n"
-                    f"2. Click the **'Reload schema cache'** button.\n"
-                    f"3. Try this query again.\n\n"
-                    f"(Original Error: {str(e)})"
+                    f"System Notice: The table '{table}' is currently inaccessible due to a system configuration issue (Schema Cache). "
+                    f"Please try again later or contact support."
                 )
         
         return db_context, columns
